@@ -14,6 +14,11 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 
 	switch nav.Payment {
 	case 1:
+		nav.Payment++
+		if err := s.Model(&db.Navegation{}).Where("id = ?", nav.ID).Update("payment", nav.Payment).Error; err != nil {
+			return "", fmt.Errorf("erro ao salvar estado de navegação (Payment = 2): %w", err)
+		}
+
 		slips, err := db.GetPendingSlips(s, nav.ClientID)
 		if err != nil {
 			fmt.Println("Erro ao obter os boletos pendentes:", err)
@@ -29,13 +34,9 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 		} else {
 			resposta = mocks.SlipsNoPending
 			nav.Payment = 1
-		}
-		nav.Payment++
-
-		if err := s.Model(&db.Navegation{}).Where("id = ?", nav.ID).Updates(map[string]interface{}{
-			"payment": nav.Payment,
-		}).Error; err != nil {
-			return "", fmt.Errorf("erro ao salvar estado de navegação: %w", err)
+			if err := s.Model(&db.Navegation{}).Where("id = ?", nav.ID).Update("payment", nav.Payment).Error; err != nil {
+				return "", fmt.Errorf("erro ao resetar estado de navegação: %w", err)
+			}
 		}
 
 	case 2:

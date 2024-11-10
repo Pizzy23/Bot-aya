@@ -62,7 +62,7 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 		}
 
 	case 3:
-		if messageText == "Sim" {
+		if messageText == "Sim" || messageText == "sim" || messageText == "SIM" {
 			resposta = mocks.PaymentConfirmed
 			nav.Payment = 1
 

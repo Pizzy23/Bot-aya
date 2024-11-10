@@ -4,7 +4,6 @@ import "time"
 
 type Client struct {
 	BaseModel
-	Email     string `json:"email"`
 	Cellphone string `json:"cellphone"`
 }
 
@@ -52,10 +51,11 @@ type Recharge struct {
 
 type Navegation struct {
 	BaseModel
-	ClientID uint `json:"client_id"`
-	Payment  int  `json:"payment"`
-	Recharge int  `json:"recharge"`
-	Invest   int  `json:"invest"`
+	ClientID  uint `json:"client_id"`
+	Payment   int  `json:"payment"`
+	Recharge  int  `json:"recharge"`
+	Invest    int  `json:"invest"`
+	Treatment bool `json:"treatment"`
 }
 
 type BaseModel struct {

@@ -1,19 +1,19 @@
 package mocks
 
 const (
-	InvestIntro = "Olá! Aqui estão os tipos de investimento disponíveis:\n" +
+	InvestIntro = "Legal! Aqui estão os tipos de investimento disponíveis:\n" +
 		"1 - Renda Fixa\n" +
 		"2 - Renda Variável\n" +
 		"3 - Tesouro Direto\n" +
 		"4 - CDB PagBank\n" +
 		"5 - Fundos de Investimento\n\n" +
-		"Por favor, digite o número do investimento que deseja visualizar."
+		"Digite o número da opção que deseja explorar."
 
 	InvestInvalidOption = "Número inválido. Por favor, tente novamente digitando o número do tipo de investimento."
 
 	InvestNotFound      = "Nenhum investimento encontrado para o tipo: %s."
-	InvestSummaryFormat = "Resumo do investimento em %s:\n\nTotal Investido: R$%.2f\nRendimentos: +R$%.2f\n"
-	InvestDetailsPrompt = "Deseja mais detalhes sobre algum investimento específico? (Digite o número ou 'não' para encerrar.)"
+	InvestSummaryFormat = "Resumo do investimento em %s:\n\nTotal Investido: R$%.2f\n\nRendimentos: +R$%.2f\n"
+	InvestDetailsPrompt = "Deseja mais informações sobre algum investimento específico?\nDigite o número da opção ou escreva 'não' para encerrar."
 
 	InvestExitPrompt = "Fico feliz em ajudar! Caso precise de atualizações ou qualquer outra assistência, é só chamar. Boa semana! 📈"
 	InvestExitOption = "Número inválido. Por favor, tente novamente digitando o número do investimento específico. \n\nDigite 'não' para sair."
@@ -35,14 +35,14 @@ const (
 	RechargeSuccess      = "Prontinho! Sua recarga de R$%.2f foi realizada com sucesso para o %s %s. Posso ajudar em mais alguma coisa?"
 	RechargeCancellation = "Cancelando a recarga. Posso ajudar com mais alguma coisa?"
 
-	WelcomeMessage          = "Testando o salvamento"
-	UnrecognizedCommand     = "Comando não reconhecido. Por favor, escolha entre: - Investimento\n- Agenda Integrada\n- Recarga."
-	EmailPrompt             = "Ola! Sou a Aia, sua assistente financeira.\nInforme seu e-mail para iniciarmos a jornada"
-	UserCreationSuccess     = "Perfeito! \nAgora nos informe o menu que deseja acessar\n\n- Investimento\n- Agenda Integrada\n- Recarga"
+	UnrecognizedCommand     = "Agora nos informe o menu que deseja acessar:\n\n- Investimento\n- Agenda Integrada\n- Recarga"
+	EmailPrompt             = "Ola! Sou a Aia, sua assistente financeira.\nInforme seu e-mail para iniciarmos a jornada."
+	UserCreationSuccess     = "Perfeito! \nAgora nos informe o menu que deseja acessar:\n\n- Investimento\n- Agenda Integrada\n- Recargas"
 	WeeklySendCodeReceived  = "Código de comando recebido. Forçando o envio da mensagem semanal."
 	NoPendingSlips          = "Olá! Não há boletos pendentes no momento."
 	ChoosePaymentOption     = "Por favor, digite o número do boleto que deseja agendar para pagamento."
 	InvalidPaymentOption    = "Número inválido. Por favor, tente novamente digitando o número do boleto."
 	PaymentScheduledSuccess = "Perfeito! Seu pagamento foi agendado. Vou enviar uma notificação de confirmação no dia do pagamento. Algo mais em que posso ajudar?"
 	CancelPaymentSchedule   = "Cancelando agendamento. Posso ajudar com mais alguma coisa?"
+	WelcomeMessage          = "Olá! Sou a AIA, sua assistente financeira.\nAgora nos informe o menu que deseja acessar:\n\n- Investimento\n- Agenda Integrada\n- Recargas"
 )

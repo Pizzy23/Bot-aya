@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"regexp"
 	"whats/db"
 	"whats/mocks"
 
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/binary/proto"
-	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 
 	"gorm.io/gorm"
@@ -31,22 +29,6 @@ func getMessageText(msg *proto.Message) string {
 		return *msg.ExtendedTextMessage.Text
 	}
 	return ""
-}
-
-func (s *QuestionsService) sendWelcomeMessage(client *whatsmeow.Client, chat types.JID) {
-	welcomeMessage := mocks.WelcomeMessage
-
-	_, err := client.SendMessage(
-		context.Background(),
-		chat,
-		&proto.Message{
-			Conversation: &welcomeMessage,
-		},
-		whatsmeow.SendRequestExtra{},
-	)
-	if err != nil {
-		fmt.Println("Erro ao enviar a mensagem de boas-vindas:", err)
-	}
 }
 
 func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{}) {
@@ -82,10 +64,11 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 
 				if !found {
 					nav = db.Navegation{
-						ClientID: user.ID,
-						Payment:  1,
-						Recharge: 1,
-						Invest:   1,
+						ClientID:  user.ID,
+						Payment:   1,
+						Recharge:  1,
+						Invest:    1,
+						Treatment: false,
 					}
 					err = db.Create(s.DB, &nav)
 					if err != nil {
@@ -94,29 +77,43 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 					}
 				}
 
-				if messageText == "Agenda Integrada" || messageText == "agenda integrada" ||
-					messageText == "AGENDA INTEGRADA" || messageText == "Agenda integrada" || nav.Payment >= 2 {
-					resposta, err = Slipers(nav, messageText, s.DB)
-					if err != nil {
-						fmt.Printf("Erro na navegação de pagamentos: %s\n", err)
+				if nav.Treatment {
+					resposta = mocks.WelcomeMessage
+					nav.Treatment = false
+					if err := s.DB.Model(&db.Navegation{}).Where("id = ?", nav.ID).Updates(map[string]interface{}{
+						"treatment": nav.Treatment,
+						"payment":   1,
+						"recharge":  1,
+						"invest":    1,
+					}).Error; err != nil {
+						fmt.Printf("Erro ao salvar estado de navegação: %s", err)
 					}
-				}
-				if messageText == "investimento" || messageText == "Investimento" || messageText == "INVESTIMENTO" || nav.Invest >= 2 {
-					resposta, err = InvestSummary(&nav, messageText, s.DB)
-					if err != nil {
-						fmt.Printf("Erro na navegação de investimento: %s\n", err)
+				} else {
+					switch {
+					case messageText == "Agenda Integrada" || messageText == "agenda integrada" || nav.Payment >= 2:
+						resposta, err = Slipers(nav, messageText, s.DB)
+					case messageText == "investimento" || messageText == "Investimento" || messageText == "INVESTIMENTO" || nav.Invest >= 2:
+						resposta, err = InvestSummary(&nav, messageText, s.DB)
+					case messageText == "recargas" || messageText == "Recargas" || messageText == "RECARGAS" || nav.Recharge >= 2:
+						resposta, err = Recharge(&nav, messageText, s.DB)
 					}
-				}
-				if messageText == "recarga" || messageText == "Recarga" || messageText == "RECARGA" || nav.Recharge >= 2 {
-					resposta, err = Recharge(&nav, messageText, s.DB)
+
 					if err != nil {
-						fmt.Printf("Erro na navegação de Recarga: %s\n", err)
+						fmt.Printf("Erro na navegação: %s\n", err)
+					}
+
+					if nav.Payment == 1 && nav.Recharge == 1 && nav.Invest == 1 {
+						nav.Treatment = true
+						if err := s.DB.Model(&db.Navegation{}).Where("id = ?", nav.ID).Update("treatment", true).Error; err != nil {
+							fmt.Printf("Erro ao salvar estado de navegação: %s", err)
+						}
 					}
 				}
 
 				if resposta == "" {
 					resposta = mocks.UnrecognizedCommand
 				}
+
 				_, err = client.SendMessage(
 					context.Background(),
 					v.Info.Chat,
@@ -132,49 +129,24 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 				return
 			}
 
-			if isEmail(messageText) {
-				newUser := db.Client{
-					Email:     messageText,
-					Cellphone: userWhats,
-				}
-				err := db.Create(s.DB, &newUser)
-				if err != nil {
-					fmt.Printf("Erro ao salvar o user: %s\n", err)
-					return
-				}
-
-				invest := mocks.CreateInvestments(newUser.ID)
-				slip := mocks.CreateSlips(newUser.ID)
-				balance := mocks.GenerateBalance(newUser.ID)
-
-				data := db.DataClient{
-					Investments: invest,
-					Slips:       slip,
-					Balances:    balance,
-				}
-
-				err = db.Create(s.DB, &data)
-				if err != nil {
-					fmt.Printf("Erro ao salvar o Data: %s\n", err)
-					return
-				}
-
-				resposta = mocks.UserCreationSuccess
-				_, err = client.SendMessage(
-					context.Background(),
-					v.Info.Chat,
-					&proto.Message{
-						Conversation: &resposta,
-					},
-					whatsmeow.SendRequestExtra{},
-				)
-				if err != nil {
-					fmt.Println("Erro ao enviar a mensagem:", err)
-				}
+			newUser := db.Client{Cellphone: userWhats}
+			if err := db.Create(s.DB, &newUser); err != nil {
+				fmt.Printf("Erro ao salvar o usuário: %s\n", err)
 				return
 			}
 
-			resposta = mocks.EmailPrompt
+			data := db.DataClient{
+				ClientID:    newUser.ID,
+				Investments: mocks.CreateInvestments(newUser.ID),
+				Slips:       mocks.CreateSlips(newUser.ID),
+				Balances:    mocks.GenerateBalance(newUser.ID),
+			}
+			if err := db.Create(s.DB, &data); err != nil {
+				fmt.Printf("Erro ao salvar o Data: %s\n", err)
+				return
+			}
+
+			resposta = mocks.WelcomeMessage
 			_, err = client.SendMessage(
 				context.Background(),
 				v.Info.Chat,
@@ -188,10 +160,4 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 			}
 		}
 	}
-}
-
-func isEmail(message string) bool {
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	re := regexp.MustCompile(emailRegex)
-	return re.MatchString(message)
 }

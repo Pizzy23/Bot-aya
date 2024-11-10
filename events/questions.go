@@ -34,8 +34,7 @@ func getMessageText(msg *proto.Message) string {
 }
 
 func (s *QuestionsService) sendWelcomeMessage(client *whatsmeow.Client, chat types.JID) {
-
-	welcomeMessage := "Testando o salvamento"
+	welcomeMessage := mocks.WelcomeMessage
 
 	_, err := client.SendMessage(
 		context.Background(),
@@ -61,7 +60,7 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 		fmt.Printf("Mensagem recebida: %s\n", messageText)
 		admin := os.Getenv("ADMIN")
 		if messageText == forceSendCode && v.Info.Chat.User == admin {
-			fmt.Println("Código de comando recebido. Forçando o envio da mensagem semanal.")
+			fmt.Println(mocks.WeeklySendCodeReceived)
 			s.sendWeeklyMessage()
 			return
 		}
@@ -95,11 +94,11 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 					}
 				}
 
-				if messageText == "pagamento" || messageText == "Pagamento" || messageText == "PAGAMENTO" || nav.Payment >= 2 {
+				if messageText == "Agenda Integrada" || messageText == "agenda integrada" ||
+					messageText == "AGENDA INTEGRADA" || messageText == "Agenda integrada" || nav.Payment >= 2 {
 					resposta, err = Slipers(nav, messageText, s.DB)
 					if err != nil {
 						fmt.Printf("Erro na navegação de pagamentos: %s\n", err)
-
 					}
 				}
 				if messageText == "investimento" || messageText == "Investimento" || messageText == "INVESTIMENTO" || nav.Invest >= 2 {
@@ -116,7 +115,7 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 				}
 
 				if resposta == "" {
-					resposta = "Comando não reconhecido. Por favor, escolha entre: investimento, pagamento, ou recarga."
+					resposta = mocks.UnrecognizedCommand
 				}
 				_, err = client.SendMessage(
 					context.Background(),
@@ -155,13 +154,12 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 				}
 
 				err = db.Create(s.DB, &data)
-
 				if err != nil {
 					fmt.Printf("Erro ao salvar o Data: %s\n", err)
 					return
 				}
 
-				resposta = fmt.Sprintf("Usuario criado com sucesso")
+				resposta = mocks.UserCreationSuccess
 				_, err = client.SendMessage(
 					context.Background(),
 					v.Info.Chat,
@@ -176,7 +174,7 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 				return
 			}
 
-			resposta = "Por favor informe seu email :)"
+			resposta = mocks.EmailPrompt
 			_, err = client.SendMessage(
 				context.Background(),
 				v.Info.Chat,

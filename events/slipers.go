@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"whats/db"
+	"whats/mocks"
 
 	"gorm.io/gorm"
 )
@@ -20,13 +21,13 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 		}
 
 		if len(slips) > 0 {
-			resposta = "Olá! Aqui estão os boletos em aberto:\n"
+			resposta = mocks.SlipsIntro
 			for i, slip := range slips {
 				resposta += fmt.Sprintf("%d - %s\n", i+1, slip.Name)
 			}
-			resposta += "\nPor favor, digite o número do boleto que deseja agendar para pagamento."
+			resposta += mocks.SlipsPrompt
 		} else {
-			resposta = "Olá! Não há boletos pendentes no momento."
+			resposta = mocks.SlipsNoPending
 			nav.Payment = 1
 		}
 		nav.Payment++
@@ -40,18 +41,18 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 	case 2:
 		index, err := strconv.Atoi(messageText)
 		if err != nil || index < 1 {
-			resposta = "Número inválido. Por favor, tente novamente digitando o número do boleto."
+			resposta = mocks.InvalidSlipNumber
 			return resposta, nil
 		}
 
 		slips, err := db.GetPendingSlips(s, nav.ClientID)
 		if err != nil || index > len(slips) {
-			resposta = "Boleto não encontrado. Por favor, tente novamente."
+			resposta = mocks.SlipNotFound
 			return resposta, nil
 		}
 
 		selectedSlip := slips[index-1]
-		resposta = fmt.Sprintf("Obrigado! Aqui estão os detalhes do boleto:\n\nNome: %s\nValor: R$%.2f\nCódigo de Barras: %s\n\nConfirma o agendamento?", selectedSlip.Name, selectedSlip.Value, selectedSlip.BarCode)
+		resposta = fmt.Sprintf(mocks.SlipDetailsTemplate, selectedSlip.Name, selectedSlip.Value, selectedSlip.BarCode)
 		nav.Payment++
 
 		if err := s.Model(&db.Navegation{}).Where("id = ?", nav.ID).Updates(map[string]interface{}{
@@ -62,7 +63,7 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 
 	case 3:
 		if messageText == "Sim" {
-			resposta = "Perfeito! Seu pagamento foi agendado. Vou enviar uma notificação de confirmação no dia do pagamento. Algo mais em que posso ajudar?"
+			resposta = mocks.PaymentConfirmed
 			nav.Payment = 1
 
 			err := db.UpdateDebt(s, nav.ClientID)
@@ -70,7 +71,7 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 				fmt.Println("Erro ao atualizar a dívida:", err)
 			}
 		} else {
-			resposta = "Cancelando agendamento. Posso ajudar com mais alguma coisa?"
+			resposta = mocks.PaymentCancelled
 			nav.Payment = 1
 		}
 

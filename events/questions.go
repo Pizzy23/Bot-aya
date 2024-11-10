@@ -77,7 +77,7 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 					}
 				}
 
-				if nav.Treatment {
+				if nav.Treatment && nav.Payment == 1 && nav.Recharge == 1 && nav.Invest == 1 {
 					resposta = mocks.WelcomeMessage
 					nav.Treatment = false
 					if err := s.DB.Model(&db.Navegation{}).Where("id = ?", nav.ID).Updates(map[string]interface{}{
@@ -90,7 +90,8 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 					}
 				} else {
 					switch {
-					case messageText == "Agenda Integrada" || messageText == "agenda integrada" || nav.Payment >= 2:
+					case messageText == "Agenda Integrada" || messageText == "agenda integrada" || messageText == "AGENDA INTEGRADA" ||
+						messageText == "Agenda" || messageText == "agenda" || messageText == "AGENDA" || nav.Payment >= 2:
 						resposta, err = Slipers(nav, messageText, s.DB)
 					case messageText == "investimento" || messageText == "Investimento" || messageText == "INVESTIMENTO" || nav.Invest >= 2:
 						resposta, err = InvestSummary(&nav, messageText, s.DB)

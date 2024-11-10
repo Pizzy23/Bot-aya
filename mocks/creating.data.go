@@ -57,6 +57,6 @@ func GenerateBalance(clientID uint) db.Balance {
 	return db.Balance{
 		ClientID:     clientID,
 		Balance:      generateAccountBalance(),
-		TotalPayment: roundToTwoDecimals(1000 + rand.Float64()*(30000-1000)), // TotalPayment fictício, ajuste conforme necessário
+		TotalPayment: roundToTwoDecimals(1000 + rand.Float64()*(30000-1000)),
 	}
 }

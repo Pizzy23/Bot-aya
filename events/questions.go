@@ -10,10 +10,9 @@ import (
 
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/binary/proto"
-	"go.mau.fi/whatsmeow/types" // Corrigir importação de types
+	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 
-	// Já estava correto
 	"gorm.io/gorm"
 )
 

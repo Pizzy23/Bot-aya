@@ -13,7 +13,6 @@ func InvestSummary(nav *db.Navegation, messageText string, s *gorm.DB) (string, 
 
 	switch nav.Invest {
 	case 1:
-		// Exibe os tipos de investimento disponíveis para escolha
 		resposta = "Olá! Aqui estão os tipos de investimento disponíveis:\n" +
 			"1 - Renda Fixa\n" +
 			"2 - Renda Variável\n" +
@@ -22,7 +21,6 @@ func InvestSummary(nav *db.Navegation, messageText string, s *gorm.DB) (string, 
 			"5 - Fundos de Investimento\n\n" +
 			"Por favor, digite o número do investimento que deseja visualizar."
 
-		// Atualiza o estado de navegação para o próximo passo
 		nav.Invest++
 		if err := s.Model(&db.Navegation{}).Where("id = ?", nav.ID).Update("invest", nav.Invest).Error; err != nil {
 			return "", fmt.Errorf("erro ao salvar estado de navegação: %w", err)

@@ -29,13 +29,13 @@ const (
 
 	RechargePrompt       = "Por favor, informe o número do celular (11 dígitos) ou do Bilhete Único (10 dígitos):"
 	InvalidNumber        = "Número inválido. Por favor, digite um número de celular (11 dígitos) ou Bilhete Único (10 dígitos)."
-	RechargeValuePrompt  = "Obrigado! Para qual valor você deseja recarregar o %s?"
+	RechargeValuePrompt  = "Obrigado! Qual valor você deseja recarregar o %s?"
 	InvalidRechargeValue = "Valor inválido. Por favor, digite um valor numérico positivo."
 	RechargeConfirmation = "Confirmando, uma recarga de R$%.2f para o %s %s. Está correto?"
 	RechargeSuccess      = "Prontinho! Sua recarga de R$%.2f foi realizada com sucesso para o %s %s. Posso ajudar em mais alguma coisa?"
 	RechargeCancellation = "Cancelando a recarga. Posso ajudar com mais alguma coisa?"
 
-	UnrecognizedCommand     = "Agora nos informe o menu que deseja acessar:\n\n- Investimento\n- Agenda Integrada\n- Recarga"
+	UnrecognizedCommand     = "Agora nos informe o menu que deseja acessar:\n\n- Investimento\n- Agenda Integrada\n- Recargas"
 	EmailPrompt             = "Ola! Sou a Aia, sua assistente financeira.\nInforme seu e-mail para iniciarmos a jornada."
 	UserCreationSuccess     = "Perfeito! \nAgora nos informe o menu que deseja acessar:\n\n- Investimento\n- Agenda Integrada\n- Recargas"
 	WeeklySendCodeReceived  = "Código de comando recebido. Forçando o envio da mensagem semanal."
@@ -45,4 +45,6 @@ const (
 	PaymentScheduledSuccess = "Perfeito! Seu pagamento foi agendado. Vou enviar uma notificação de confirmação no dia do pagamento. Algo mais em que posso ajudar?"
 	CancelPaymentSchedule   = "Cancelando agendamento. Posso ajudar com mais alguma coisa?"
 	WelcomeMessage          = "Olá! Sou a AIA, sua assistente financeira.\nAgora nos informe o menu que deseja acessar:\n\n- Investimento\n- Agenda Integrada\n- Recargas"
+	RechargExitPrompt       = "Fico feliz em ajudar! Caso precise de atualizações ou qualquer outra assistência, é só chamar. Boa semana! "
+	SlipsExitPrompt         = "Fico feliz em ajudar! Caso precise de atualizações ou qualquer outra assistência, é só chamar. Boa semana! "
 )

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"whats/db"
 	"whats/mocks"
 
@@ -90,12 +91,11 @@ func (s *QuestionsService) EventHandler(client *whatsmeow.Client, evt interface{
 					}
 				} else {
 					switch {
-					case messageText == "Agenda Integrada" || messageText == "agenda integrada" || messageText == "AGENDA INTEGRADA" ||
-						messageText == "Agenda" || messageText == "agenda" || messageText == "AGENDA" || nav.Payment >= 2:
+					case strings.Contains(strings.ToLower(messageText), "agenda integrada") || strings.Contains(strings.ToLower(messageText), "agenda") || nav.Payment >= 2:
 						resposta, err = Slipers(nav, messageText, s.DB)
-					case messageText == "investimento" || messageText == "Investimento" || messageText == "INVESTIMENTO" || nav.Invest >= 2:
+					case strings.Contains(strings.ToLower(messageText), "investimento") || nav.Invest >= 2:
 						resposta, err = InvestSummary(&nav, messageText, s.DB)
-					case messageText == "recargas" || messageText == "Recargas" || messageText == "RECARGAS" || nav.Recharge >= 2:
+					case strings.Contains(strings.ToLower(messageText), "recargas") || nav.Recharge >= 2:
 						resposta, err = Recharge(&nav, messageText, s.DB)
 					}
 

@@ -81,6 +81,7 @@ func Slipers(nav db.Navegation, messageText string, s *gorm.DB) (string, error) 
 		}).Error; err != nil {
 			return "", fmt.Errorf("erro ao salvar estado de navegação: %w", err)
 		}
+		return mocks.SlipsExitPrompt, nil
 	}
 
 	return resposta, nil
